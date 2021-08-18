@@ -1,6 +1,6 @@
 import { Node } from "unist";
 import { CustomizationHook } from "./customization-hooks";
-import { HeadingTagName, HtmlElementNode, ListItemNode } from "./types";
+import { HeadingTagName, HtmlElementNode, ListItemNode, HeadingNode } from "./types";
 
 /**
  * The different positions at which the table of contents can be inserted,
@@ -40,6 +40,16 @@ export interface Options {
    * CSS class names for various parts of the table of contents.
    */
   cssClasses?: CssClasses;
+
+  /**
+   * Allows you to customize the table of contents before it is added to the page.
+   *
+   * @param toc - The table of contents HAST node tree
+   * @returns - Return the modified node, a new node to replace it with, or `undefined` to use the
+   * existing node. You can return a falsy value to prevent the table of contents from being added
+   * to the page.
+   */
+  customizeTOCData?(toc: HeadingNode[]): boolean | undefined;
 
   /**
    * Allows you to customize the table of contents before it is added to the page.
@@ -106,6 +116,7 @@ export class NormalizedOptions {
   public readonly position: InsertPosition;
   public readonly headings: HeadingTagName[];
   public readonly cssClasses: Required<CssClasses>;
+  public readonly customizeTOCData?: ((toc: HeadingNode[]) => boolean | undefined);
   public readonly customizeTOC?: CustomizationHook;
   public readonly customizeTOCItem?: CustomizationHook;
 
@@ -124,6 +135,7 @@ export class NormalizedOptions {
       listItem: cssClasses.listItem === undefined ? "toc-item" : cssClasses.listItem,
       link: cssClasses.link === undefined ? "toc-link" : cssClasses.link,
     };
+    this.customizeTOCData = options.customizeTOCData;
     this.customizeTOC = options.customizeTOC;
     this.customizeTOCItem = options.customizeTOCItem;
   }
