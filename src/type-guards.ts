@@ -8,8 +8,12 @@ import { HeadingNode, HeadingTagName, HtmlElementNode } from "./types";
 export function isHtmlElementNode(node: Node): node is HtmlElementNode {
   return typeof node === "object" &&
     node.type === "element" &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     typeof node.tagName === "string" &&
     "properties" in node &&
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     typeof node.properties === "object";
 }
 

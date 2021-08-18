@@ -30,6 +30,8 @@ function findTagName(node: Node, tagName: string): [HtmlElementNode | undefined,
     return [node, undefined];
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   if (node.children) {
     let parent = node as HtmlElementNode;
     for (let child of parent.children!) {

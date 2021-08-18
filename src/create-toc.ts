@@ -132,6 +132,8 @@ function createListItem(heading: HeadingNode, options: NormalizedOptions): ListI
     children: [
       {
         type: "element",
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         tagName: "a",
         properties: {
           className: buildClass(options.cssClasses.link, heading.tagName),
