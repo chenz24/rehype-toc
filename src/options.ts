@@ -20,6 +20,13 @@ export interface Options {
   nav?: boolean;
 
   /**
+   * Determines whether return raw data.
+   *
+   * Defaults to `false`.
+   */
+  rawData?: boolean;
+
+  /**
    * The position at which the table of contents should be inserted, relative to the `<main>`
    * element.
    *
@@ -40,16 +47,6 @@ export interface Options {
    * CSS class names for various parts of the table of contents.
    */
   cssClasses?: CssClasses;
-
-  /**
-   * Allows you to customize the table of contents before it is added to the page.
-   *
-   * @param toc - The table of contents HAST node tree
-   * @returns - Return the modified node, a new node to replace it with, or `undefined` to use the
-   * existing node. You can return a falsy value to prevent the table of contents from being added
-   * to the page.
-   */
-  customizeTOCData?(toc: HeadingNode[]): boolean | undefined;
 
   /**
    * Allows you to customize the table of contents before it is added to the page.
@@ -113,10 +110,10 @@ export interface CssClasses {
  */
 export class NormalizedOptions {
   public readonly nav: boolean;
+  public readonly rawData: boolean;
   public readonly position: InsertPosition;
   public readonly headings: HeadingTagName[];
   public readonly cssClasses: Required<CssClasses>;
-  public readonly customizeTOCData?: ((toc?: HeadingNode[]) => boolean | undefined);
   public readonly customizeTOC?: CustomizationHook;
   public readonly customizeTOCItem?: CustomizationHook;
 
@@ -127,6 +124,7 @@ export class NormalizedOptions {
     let cssClasses = options.cssClasses || {};
 
     this.nav = options.nav === undefined ? true : Boolean(options.nav);
+    this.rawData = options.rawData === undefined ? false : Boolean(options.rawData);
     this.position = options.position || "afterbegin";
     this.headings = options.headings || ["h1", "h2", "h3", "h4", "h5", "h6"];
     this.cssClasses = {
@@ -135,7 +133,6 @@ export class NormalizedOptions {
       listItem: cssClasses.listItem === undefined ? "toc-item" : cssClasses.listItem,
       link: cssClasses.link === undefined ? "toc-link" : cssClasses.link,
     };
-    this.customizeTOCData = options.customizeTOCData;
     this.customizeTOC = options.customizeTOC;
     this.customizeTOCItem = options.customizeTOCItem;
   }

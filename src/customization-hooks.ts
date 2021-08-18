@@ -1,16 +1,16 @@
 import { Node } from "unist";
 import { NormalizedOptions } from "./options";
-import { HtmlElementNode } from "./types";
+import { HtmlElementNode, TocLevel } from "./types";
 
 /**
  * A function that allows callers to customize the table of contents
  */
-export type CustomizationHook = (node: Node, ...args: unknown[]) => Node | boolean | undefined;
+export type CustomizationHook = (node: HtmlElementNode | TocLevel[], ...args: unknown[]) => Node | boolean | undefined;
 
 /**
  * Allows the user to customize the table of contents before it gets added to the page.
  */
-export function customizationHooks(toc: HtmlElementNode, options: NormalizedOptions): Node | undefined {
+export function customizationHooks(toc: any, options: NormalizedOptions): Node | undefined {
   let { customizeTOC, customizeTOCItem } = options;
   customizeNodes(toc, "li", customizeTOCItem);
   return customizationHook(customizeTOC, toc);
@@ -46,6 +46,8 @@ function customizationHook(hook: CustomizationHook | undefined, node: Node, args
   }
 
   // Call the customization hook
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   let newNode = hook(node, ...args);
 
   if (newNode && typeof newNode === "object") {

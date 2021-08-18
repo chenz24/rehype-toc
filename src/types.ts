@@ -49,3 +49,9 @@ export interface ListItemNode extends HtmlElementNode {
   tagName: "li";
   children: Node[];
 }
+
+export interface TocLevel {
+  depth: number;
+  headingNumber: number;
+  list?: ListNode;
+}

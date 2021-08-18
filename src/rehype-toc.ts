@@ -21,14 +21,14 @@ export function toc(this: Processor, opts?: Options): Transformer {
     // Find all heading elements
     let headings = findHeadings(mainNode, options);
 
-    let processNext = options.customizeTOCData ? options.customizeTOCData(headings) : true;
-
-    if (!processNext) return root;
-
     // Create the table of contents
     let tocNode = createTOC(headings, options);
 
     // Allow the user to customize the table of contents before we add it to the page
+    if (options.rawData && options.customizeTOC) {
+      options.customizeTOC(tocNode);
+      return root;
+    }
     let node = customizationHooks(tocNode, options);
 
     if (node) {

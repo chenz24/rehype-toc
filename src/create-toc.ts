@@ -1,17 +1,15 @@
 import { getInnerText } from "./get-inner-text";
 import { buildClass, NormalizedOptions } from "./options";
-import { HeadingNode, HtmlElementNode, ListItemNode, ListNode } from "./types";
-
-interface TocLevel {
-  depth: number;
-  headingNumber: number;
-  list: ListNode;
-}
+import { HeadingNode, HtmlElementNode, ListItemNode, ListNode, TocLevel } from "./types";
 
 /**
  * Creates a `<nav>` and/or `<ol>` element containing the table of contents.
  */
-export function createTOC(headings: HeadingNode[], options: NormalizedOptions): HtmlElementNode {
+export function createTOC(headings: HeadingNode[], options: NormalizedOptions): HtmlElementNode | TocLevel[] {
+  if (options.rawData) {
+    return createTocRawData(headings);
+  }
+
   let list = createTocList(headings, options);
 
   if (options.nav) {
@@ -29,6 +27,57 @@ export function createTOC(headings: HeadingNode[], options: NormalizedOptions): 
       [options.cssClasses.toc, list.properties.className].filter(Boolean).join(" ") || undefined;
     return list;
   }
+}
+
+/**
+ * Creates raw data of toc.
+ */
+function createTocRawData(headings: HeadingNode[]): TocLevel[] {
+  let levels: TocLevel[] = [];
+  let currentLevel: TocLevel = {
+    depth: 0,
+    headingNumber: 0,
+    list: undefined as unknown as ListNode,
+  };
+
+  for (let heading of headings) {
+    let headingNumber = parseInt(heading.tagName.slice(-1), 10);
+
+    if (headingNumber > currentLevel.headingNumber) {
+      // This is a higher heading number, so start a new level
+      let depth = currentLevel.depth + 1;
+      let level = {
+        depth,
+        headingNumber,
+        tagName: heading.tagName,
+        properties: heading.properties,
+        text: heading.children,
+        // list: createList(heading, depth, options),
+      };
+
+      levels.push(level);
+      currentLevel = level;
+    }
+    else {
+      if (headingNumber < currentLevel.headingNumber) {
+        // This is a lower heading number, so we need to go up to a previous level
+        for (let i = levels.length - 2; i >= 0; i--) {
+          let level = levels[i];
+          if (level.headingNumber === headingNumber) {
+            // We found the previous level that matches this heading
+            levels = levels.slice(0, i + 1);
+            currentLevel = level;
+            break;
+          }
+        }
+
+        // If headings are in an incorrect order, then we may need to adjust the headingNumber
+        currentLevel.headingNumber = Math.min(currentLevel.headingNumber, headingNumber);
+      }
+    }
+  }
+
+  return levels;
 }
 
 /**
@@ -83,6 +132,8 @@ function createTocList(headings: HeadingNode[], options: NormalizedOptions): Htm
       // This heading is the same level as the previous heading,
       // so just add another <li> to the same <ol>
       let listItem = createListItem(heading, options);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       currentLevel.list.children.push(listItem);
     }
   }
@@ -91,6 +142,8 @@ function createTocList(headings: HeadingNode[], options: NormalizedOptions): Htm
     return createList(undefined, 1, options);
   }
   else {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     return levels[0].list;
   }
 }
