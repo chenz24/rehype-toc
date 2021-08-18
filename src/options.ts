@@ -116,7 +116,7 @@ export class NormalizedOptions {
   public readonly position: InsertPosition;
   public readonly headings: HeadingTagName[];
   public readonly cssClasses: Required<CssClasses>;
-  public readonly customizeTOCData?: ((toc: HeadingNode[]) => boolean | undefined);
+  public readonly customizeTOCData?: ((toc?: HeadingNode[]) => boolean | undefined);
   public readonly customizeTOC?: CustomizationHook;
   public readonly customizeTOCItem?: CustomizationHook;
 
