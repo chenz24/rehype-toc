@@ -21,6 +21,10 @@ export function toc(this: Processor, opts?: Options): Transformer {
     // Find all heading elements
     let headings = findHeadings(mainNode, options);
 
+    let processNext = options.customizeTOCData && options.customizeTOCData(headings);
+
+    if (!processNext) return root;
+
     // Create the table of contents
     let tocNode = createTOC(headings, options);
 
