@@ -28,6 +28,8 @@ function customizeNodes(parent: HtmlElementNode, tagName: string, hook?: Customi
       }
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     if (child.children) {
       customizeNodes(child as HtmlElementNode, tagName, hook);
     }

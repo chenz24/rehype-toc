@@ -20,6 +20,8 @@ function findHeadingsRecursive(node: Node, headingNodes: HeadingNode[], options:
     headingNodes.push(node);
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   if (node.children) {
     let parent = node as Parent;
     for (let child of parent.children) {
